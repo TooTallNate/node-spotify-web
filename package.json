@@ -1,0 +1,22 @@
+{
+  "name": "spotify-web",
+  "version": "0.0.0",
+  "description": "NodeJS implementation of the Spotify Web protocol",
+  "main": "index.js",
+  "dependencies": {
+    "cheerio": "~0.10.5",
+    "debug": "~0.7.0",
+    "protobuf": "~0.8.6",
+    "superagent": "~0.11.0",
+    "ws": "~0.4.25"
+  },
+  "devDependencies": {
+    "speaker": "~0.0.6"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "",
+  "author": "Nathan Rajlich <nathan@tootallnate.net> (http://tootallnate.net)",
+  "license": "MIT"
+}
