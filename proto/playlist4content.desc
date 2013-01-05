@@ -1,0 +1,31 @@
+
+Ž
+playlist4content.protospotify.playlist4.protoplaylist4meta.protoplaylist4issues.proto"P
+Item
+uri (	;
+
+attributes (2'.spotify.playlist4.proto.ItemAttributes"Y
+	ListItems
+pos (
+	truncated (,
+items (2.spotify.playlist4.proto.Item"+
+ContentRange
+pos (
+length ("³
+ListContentSelection
+wantRevision (
+
+wantLength (
+wantAttributes (
+wantChecksum (
+wantContent (;
+contentRange (2%.spotify.playlist4.proto.ContentRange
+wantDiff (
+baseRevision (
+hintRevision	 (
+wantNothingIfUpToDate
+ (
+wantResolveAction (4
+issues (2$.spotify.playlist4.proto.ClientIssueC
+resolveAction (2,.spotify.playlist4.proto.ClientResolveActionB
+com.spotify.playlist4.protoH
