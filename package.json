@@ -11,6 +11,7 @@
     "ws": "~0.4.25"
   },
   "devDependencies": {
+    "lame": "*",
     "speaker": "~0.0.6"
   },
   "scripts": {
