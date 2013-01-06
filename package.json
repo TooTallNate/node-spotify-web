@@ -11,8 +11,9 @@
     "ws": "~0.4.25"
   },
   "devDependencies": {
-    "lame": "*",
-    "speaker": "~0.0.6"
+    "lame": "~1.0.1",
+    "speaker": "~0.0.6",
+    "xml2js": "~0.2.2"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
