@@ -14,16 +14,14 @@ var trackUri = process.argv[2] || 'spotify:track:6tdp8sdXrXlPV6AZZN2PE8';
 
 Spotify.login(login.username, login.password, function (err, spotify) {
   if (err) throw err;
-  console.error('logged in!');
 
+  // first get a "track" instance from the Track URI
   spotify.metadata(trackUri, function (err, track) {
     if (err) throw err;
-    console.error(track);
-    console.error(track.album.cover);
-
     spotify.trackUri(track, function (err, res) {
       if (err) throw err;
-      console.error(res);
+      console.log('Playing: %s - %s', track.artist[0].name, track.name);
+      console.log('MP3 URL: %j', res.uri);
 
       // no need to be connected to Spotify any longer...
       spotify.disconnect();
