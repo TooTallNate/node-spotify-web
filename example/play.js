@@ -1,6 +1,6 @@
 
 /**
- * Example script that retreives the specified Track through Spotify, then decodes
+ * Example script that retrieves the specified Track through Spotify, then decodes
  * the MP3 data through node-lame, and fianally plays the decoded PCM data through
  * the speakers using node-speaker.
  */
