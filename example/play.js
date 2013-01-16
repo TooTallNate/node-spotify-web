@@ -10,14 +10,16 @@ var login = require('../login');
 var lame = require('lame');
 var Speaker = require('speaker');
 var superagent = require('superagent');
-var trackUri = process.argv[2] || 'spotify:track:6tdp8sdXrXlPV6AZZN2PE8';
+
+var uri = process.argv[2] || 'spotify:track:6tdp8sdXrXlPV6AZZN2PE8';
 
 Spotify.login(login.username, login.password, function (err, spotify) {
   if (err) throw err;
 
   // first get a "track" instance from the Track URI
-  spotify.metadata(trackUri, function (err, track) {
+  spotify.metadata(uri, function (err, track) {
     if (err) throw err;
+
     spotify.trackUri(track, function (err, res) {
       if (err) throw err;
       console.log('Playing: %s - %s', track.artist[0].name, track.name);
@@ -26,11 +28,9 @@ Spotify.login(login.username, login.password, function (err, spotify) {
       // no need to be connected to Spotify any longer...
       spotify.disconnect();
 
-      var decoder = new lame.Decoder();
-      decoder.on('format', function (format) {
-        decoder.pipe(new Speaker(format));
-      });
-      superagent.get(res.uri).pipe(decoder);
+      superagent.get(res.uri)
+        .pipe(new lame.Decoder())
+        .pipe(new Speaker());
     });
   });
 });
