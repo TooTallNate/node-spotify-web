@@ -25,12 +25,12 @@ Spotify.login(login.username, login.password, function (err, spotify) {
       console.log('Playing: %s - %s', track.artist[0].name, track.name);
       console.log('MP3 URL: %j', res.uri);
 
-      // no need to be connected to Spotify any longer...
-      spotify.disconnect();
-
       superagent.get(res.uri)
         .pipe(new lame.Decoder())
-        .pipe(new Speaker());
+        .pipe(new Speaker())
+        .on('finish', function () {
+          spotify.disconnect();
+        });
     });
   });
 });
