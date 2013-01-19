@@ -11,26 +11,28 @@ var lame = require('lame');
 var Speaker = require('speaker');
 var superagent = require('superagent');
 
+// determine the URI to play, ensure it's a "track" URI
 var uri = process.argv[2] || 'spotify:track:6tdp8sdXrXlPV6AZZN2PE8';
+var type = Spotify.uriType(uri);
+if ('track' != type) {
+  throw new Error('Must pass a "track" URI, got ' + JSON.stringify(type));
+}
 
+// initiate the Spotify session
 Spotify.login(login.username, login.password, function (err, spotify) {
   if (err) throw err;
 
-  // first get a "track" instance from the Track URI
+  // first get a "Track" instance from the track URI
   spotify.metadata(uri, function (err, track) {
     if (err) throw err;
+    console.log('Playing: %s - %s', track.artist[0].name, track.name);
 
-    spotify.trackUri(track, function (err, res) {
-      if (err) throw err;
-      console.log('Playing: %s - %s', track.artist[0].name, track.name);
-      console.log('MP3 URL: %j', res.uri);
+    track.play()
+      .pipe(new lame.Decoder())
+      .pipe(new Speaker())
+      .on('finish', function () {
+        spotify.disconnect();
+      });
 
-      superagent.get(res.uri)
-        .pipe(new lame.Decoder())
-        .pipe(new Speaker())
-        .on('finish', function () {
-          spotify.disconnect();
-        });
-    });
   });
 });
