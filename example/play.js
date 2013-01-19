@@ -9,7 +9,6 @@ var Spotify = require('../');
 var login = require('../login');
 var lame = require('lame');
 var Speaker = require('speaker');
-var superagent = require('superagent');
 
 // determine the URI to play, ensure it's a "track" URI
 var uri = process.argv[2] || 'spotify:track:6tdp8sdXrXlPV6AZZN2PE8';
