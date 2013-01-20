@@ -22,7 +22,7 @@ Spotify.login(login.username, login.password, function (err, spotify) {
   if (err) throw err;
 
   // first get a "Track" instance from the track URI
-  spotify.metadata(uri, function (err, track) {
+  spotify.get(uri, function (err, track) {
     if (err) throw err;
     console.log('Playing: %s - %s', track.artist[0].name, track.name);
 
