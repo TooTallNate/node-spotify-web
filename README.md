@@ -53,7 +53,7 @@ Spotify.login(username, password, function (err, spotify) {
 });
 ```
 
-See the `examples` directory for some more example code.
+See the `example` directory for some more example code.
 
 
 API
