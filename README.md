@@ -20,12 +20,14 @@ Example
 -------
 
 Here's an example of logging in to the Spotify server and creating a session. Then
-requesting the metadata for a given Track URI, and prints the playback URL for the
-audio file:
+requesting the metadata for a given track URI, and plays the track audio file
+through the speakers:
 
 ``` javascript
+var lame = require('lame');
+var Speaker = require('speaker');
 var Spotify = require('spotify-web');
-var trackUri = process.argv[2] || 'spotify:track:6tdp8sdXrXlPV6AZZN2PE8';
+var uri = process.argv[2] || 'spotify:track:6tdp8sdXrXlPV6AZZN2PE8';
 
 // Spotify credentials...
 var username = process.env.USERNAME;
@@ -34,19 +36,19 @@ var password = process.env.PASSWORD;
 Spotify.login(username, password, function (err, spotify) {
   if (err) throw err;
 
-  // first get a "track" instance from the Track URI
-  spotify.metadata(trackUri, function (err, track) {
+  // first get a "Track" instance from the track URI
+  spotify.get(uri, function (err, track) {
     if (err) throw err;
-    console.log('Playback URI for: %s - %s', track.artist[0].name, track.name);
+    console.log('Playing: %s - %s', track.artist[0].name, track.name);
 
-    // next get the playback MP3 URI
-    spotify.trackUri(track, function (err, res) {
-      if (err) throw err;
-      console.log('MP3 URL: %j', res.uri);
+    // play() returns a readable stream of MP3 audio data
+    track.play()
+      .pipe(new lame.Decoder())
+      .pipe(new Speaker())
+      .on('finish', function () {
+        spotify.disconnect();
+      });
 
-      // disconnect from Spotify so the program can exit
-      spotify.disconnect();
-    });
   });
 });
 ```
