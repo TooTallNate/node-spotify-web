@@ -20,7 +20,7 @@ Spotify.login(login.username, login.password, function (err, spotify) {
   // first get a "Album" instance from the album URI
   spotify.get(uri, function (err, album) {
     if (err) throw err;
-    console.log('Album Art URIs for "%s - %s"', album.artist.name, album.name);
+    console.log('Album Art URIs for "%s - %s"', album.artist[0].name, album.name);
 
     // print out the HTTP uris for each image size of the album covers
     album.cover.forEach(function (image) {
