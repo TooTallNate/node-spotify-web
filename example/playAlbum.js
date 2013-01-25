@@ -41,6 +41,10 @@ Spotify.login(login.username, login.password, function (err, spotify) {
         console.log('Playing: %s - %s', track.artist[0].name, track.name);
 
         track.play()
+          .on('error', function (err) {
+            console.error(err.stack || err);
+            next();
+          })
           .pipe(new lame.Decoder())
           .pipe(new Speaker())
           .on('finish', next);
