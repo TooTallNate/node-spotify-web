@@ -20,7 +20,7 @@ Example
 -------
 
 Here's an example of logging in to the Spotify server and creating a session. Then
-requesting the metadata for a given track URI, and plays the track audio file
+requesting the metadata for a given track URI, and playing the track audio file
 through the speakers:
 
 ``` javascript
