@@ -1,7 +1,7 @@
 
 /**
  * Example script that retrieves the specified Album through Spotify, then decodes
- * the MP3 data through node-lame, and fianally plays the decoded PCM data through
+ * the MP3 data through node-lame, and finally plays the decoded PCM data through
  * the speakers using node-speaker.
  */
 
