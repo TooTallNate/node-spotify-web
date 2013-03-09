@@ -1,3 +1,14 @@
+0.1.0 / 2013-03-09
+==================
+
+ - spotify: implement real error handling
+ - spotify: ignore "login_complete" message commands
+ - spotify: throw an error on unhandled "message" commands
+ - error: add SpotifyError class
+ - spotify: make rootlist() user default to yourself
+ - track: send the User-Agent in .play()
+ - Added `rootlist()` function to get a user's stored playlists
+
 0.0.2 / 2013-02-07
 ==================
 

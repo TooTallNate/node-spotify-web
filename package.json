@@ -1,6 +1,6 @@
 {
   "name": "spotify-web",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "NodeJS implementation of the Spotify Web protocol",
   "main": "index.js",
   "dependencies": {
