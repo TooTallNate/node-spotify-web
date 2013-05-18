@@ -1,3 +1,8 @@
+0.1.2 / 2013-05-18
+==================
+
+ - spotify: use AP resolver to connect to websocket server (GH-13) @adammw
+
 0.1.1 / 2013-03-22
 ==================
 
