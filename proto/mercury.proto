@@ -23,6 +23,6 @@ message MercuryReply {
   optional CachePolicy cache_policy = 3;
   optional sint32 ttl = 4;
   optional bytes etag = 5;
-  optional string content_type = 6;
+  optional bytes content_type = 6;
   optional bytes body = 7;
 }
