@@ -16,7 +16,7 @@
 cache_policy (2/.spotify.mercury.proto.MercuryReply.CachePolicy
 ttl (
 etag (
-content_type (	
+content_type (
 body ("@
 CachePolicy
 CACHE_NO
