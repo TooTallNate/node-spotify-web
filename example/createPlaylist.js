@@ -5,7 +5,6 @@
 
 var Spotify = require('../');
 var login = require('../login');
-var async = require('async')
 
 // determine the track URIs to add to the playlist, ensure they are "track" URIs
 var tracks = process.argv.slice(2);
