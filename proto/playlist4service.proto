@@ -1,0 +1,8 @@
+package spotify.playlist4.proto;
+option optimize_for = SPEED;
+
+ 
+      message CreateListReply {
+        required bytes uri = 1;
+        optional bytes revision = 2;
+      }
