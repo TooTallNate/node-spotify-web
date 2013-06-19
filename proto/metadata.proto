@@ -29,6 +29,8 @@ message Artist {
   repeated ActivityPeriod activity_period = 13;
   repeated Restriction restriction = 14;
   repeated Artist related = 15;
+  optional bool is_portrait_album_cover = 16;
+  optional ImageGroup portrait_group = 17;
 }
 message AlbumGroup {
   repeated Album album = 1;
@@ -59,6 +61,8 @@ message Album {
   repeated Copyright copyright = 13;
   repeated Restriction restriction = 14;
   repeated Album related = 15;
+  repeated SalePeriod sale_period  = 16;
+  optional ImageGroup cover_group  = 17;
 }
 
 message Track {
@@ -75,6 +79,8 @@ message Track {
   repeated Restriction restriction = 11;
   repeated AudioFile file = 12;
   repeated Track alternative = 13;
+  repeated SalePeriod sale_period = 14;
+  repeated AudioFile preview = 15;
 }
 message Image {
   enum Size {
@@ -88,9 +94,13 @@ message Image {
   optional sint32 width = 3;
   optional sint32 height = 4;
 }
+message ImageGroup {
+  repeated Image image = 1;
+}
 message Biography {
   optional string text = 1;
   repeated Image portrait = 2;
+  repeated ImageGroup portrait_group = 3;
 }
 message Disc {
   optional sint32 number = 1;
@@ -118,10 +128,18 @@ message Restriction {
   optional string countries_forbidden = 3;
   optional Type type = 4;
 }
+
+message SalePeriod {
+  repeated Restriction restriction = 1;
+  optional Date start = 2;
+  optional Date end = 3;
+}
+
 message ExternalId {
   optional string type = 1;
   optional string id = 2;
 }
+
 message AudioFile {
   enum Format {
     OGG_VORBIS_96 = 0;
@@ -130,6 +148,7 @@ message AudioFile {
     MP3_256 = 3;
     MP3_320 = 4;
     MP3_160 = 5;
+    MP3_96 = 6;
   }
   optional bytes file_id = 1;
   optional Format format = 2;
