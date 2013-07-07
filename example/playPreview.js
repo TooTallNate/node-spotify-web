@@ -25,19 +25,13 @@ Spotify.login(login.username, login.password, function (err, spotify) {
   spotify.get(uri, function (err, track) {
     if (err) throw err;
     console.log('Playing 30 second preview of: %s - %s', track.artist[0].name, track.name);
-    var previewUrl = 'http://d318706lgtcm8e.cloudfront.net/mp3-preview/' + Spotify.gid2id(track.preview[0].fileId);
-    
-    var req = spotify.agent.get(previewUrl)
-      .set({ 'User-Agent': spotify.userAgent })
-      .end()
-      .request();
-    req.on('response', function(res) {
-      res.pipe(new lame.Decoder())
-        .pipe(new Speaker())
-        .on('finish', function () {
-          spotify.disconnect();
-        });
-    });
 
+    track.playPreview()
+      .pipe(new lame.Decoder())
+      .pipe(new Speaker())
+      .on('finish', function () {
+        spotify.disconnect();
+      });
+    
   });
 });
