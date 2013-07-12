@@ -14,16 +14,8 @@ Spotify.login(login.username, login.password, function (err, spotify) {
   spotify.rootlist(function (err, rootlist) {
     if (err) throw err;
 
-    spotify.subscribe(function(err, change) {
-      if (err) throw err;
-      console.log('Rootlist Change:', change);
-    }, function(err, subscription) {
-      if (err) throw err;
-      console.log('Subscription:',subscription)
-    });
-
     console.log(rootlist.contents);
 
-    //spotify.disconnect();
+    spotify.disconnect();
   });
 });
