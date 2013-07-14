@@ -18,7 +18,7 @@ message MercuryReply {
     CACHE_PRIVATE = 2;
     CACHE_PUBLIC = 3;
   }
-  optional sint32 statusCode = 1;
+  optional string statusCode = 1;
   optional string statusMessage = 2;
   optional CachePolicy cachePolicy = 3;
   optional sint32 ttl = 4;
