@@ -19,13 +19,13 @@ message ChangeInfo {
   optional bool migration = 8;
 }
 message Delta {
-  optional bytes base_version = 1;
+  optional bytes baseVersion = 1;
   repeated Op ops = 2;
   optional ChangeInfo info = 4;
 }
 message Merge {
-  optional bytes base_version = 1;
-  optional bytes merge_version = 2;
+  optional bytes baseVersion = 1;
+  optional bytes mergeVersion = 2;
   optional ChangeInfo info = 4;
 }
 message ChangeSet {
@@ -40,12 +40,12 @@ message ChangeSet {
 }
 message RevisionTaggedChangeSet {
   required bytes revision = 1;
-  required ChangeSet change_set = 2;
+  required ChangeSet changeSet = 2;
 }
 message Diff {
-  required bytes from_revision = 1;
+  required bytes fromRevision = 1;
   repeated Op ops = 2;
-  required bytes to_revision = 3;
+  required bytes toRevision = 3;
 }
 message ListDump {
   optional bytes latestRevision = 1;

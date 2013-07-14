@@ -9,28 +9,28 @@ message TopTracks {
   repeated Track track = 2;
 }
 message ActivityPeriod {
-  optional sint32 start_year = 1;
-  optional sint32 end_year = 2;
+  optional sint32 startYear = 1;
+  optional sint32 endYear = 2;
   optional sint32 decade = 3;
 }
 message Artist {
   optional bytes gid = 1;
   optional string name = 2;
   optional sint32 popularity = 3;
-  repeated TopTracks top_track = 4;
-  repeated AlbumGroup album_group = 5;
-  repeated AlbumGroup single_group = 6;
-  repeated AlbumGroup compilation_group = 7;
-  repeated AlbumGroup appears_on_group = 8;
+  repeated TopTracks topTrack = 4;
+  repeated AlbumGroup albumGroup = 5;
+  repeated AlbumGroup singleGroup = 6;
+  repeated AlbumGroup compilationGroup = 7;
+  repeated AlbumGroup appearsOnGroup = 8;
   repeated string genre = 9;
-  repeated ExternalId external_id = 10;
+  repeated ExternalId externalId = 10;
   repeated Image portrait = 11;
   repeated Biography biography = 12;
-  repeated ActivityPeriod activity_period = 13;
+  repeated ActivityPeriod activityPeriod = 13;
   repeated Restriction restriction = 14;
   repeated Artist related = 15;
-  optional bool is_portrait_album_cover = 16;
-  optional ImageGroup portrait_group = 17;
+  optional bool isPortraitAlbumCover = 16;
+  optional ImageGroup portraitGroup = 17;
 }
 message AlbumGroup {
   repeated Album album = 1;
@@ -55,14 +55,14 @@ message Album {
   optional sint32 popularity = 7;
   repeated string genre = 8;
   repeated Image cover = 9;
-  repeated ExternalId external_id = 10;
+  repeated ExternalId externalId = 10;
   repeated Disc disc = 11;
   repeated string review = 12;
   repeated Copyright copyright = 13;
   repeated Restriction restriction = 14;
   repeated Album related = 15;
-  repeated SalePeriod sale_period  = 16;
-  optional ImageGroup cover_group  = 17;
+  repeated SalePeriod salePeriod  = 16;
+  optional ImageGroup coverGroup  = 17;
 }
 
 message Track {
@@ -71,15 +71,15 @@ message Track {
   optional Album album = 3;
   repeated Artist artist = 4;
   optional sint32 number = 5;
-  optional sint32 disc_number = 6;
+  optional sint32 discNumber = 6;
   optional sint32 duration = 7;
   optional sint32 popularity = 8;
   optional bool explicit = 9;
-  repeated ExternalId external_id = 10;
+  repeated ExternalId externalId = 10;
   repeated Restriction restriction = 11;
   repeated AudioFile file = 12;
   repeated Track alternative = 13;
-  repeated SalePeriod sale_period = 14;
+  repeated SalePeriod salePeriod = 14;
   repeated AudioFile preview = 15;
 }
 message Image {
@@ -89,7 +89,7 @@ message Image {
     LARGE = 2;
     XLARGE = 3;
   }
-  optional bytes file_id = 1;
+  optional bytes fileId = 1;
   optional Size size = 2;
   optional sint32 width = 3;
   optional sint32 height = 4;
@@ -100,7 +100,7 @@ message ImageGroup {
 message Biography {
   optional string text = 1;
   repeated Image portrait = 2;
-  repeated ImageGroup portrait_group = 3;
+  repeated ImageGroup portraitGroup = 3;
 }
 message Disc {
   optional sint32 number = 1;
@@ -119,13 +119,14 @@ message Restriction {
   enum Catalogue {
     AD = 0;
     SUBSCRIPTION = 1;
+    UNKNOWN = 3;
   }
   enum Type {
     STREAMING = 0;
   }
   repeated Catalogue catalogue = 1;
-  optional string countries_allowed = 2;
-  optional string countries_forbidden = 3;
+  optional string countriesAllowed = 2;
+  optional string countriesForbidden = 3;
   optional Type type = 4;
 }
 
@@ -150,6 +151,6 @@ message AudioFile {
     MP3_160 = 5;
     MP3_96 = 6;
   }
-  optional bytes file_id = 1;
+  optional bytes fileId = 1;
   optional Format format = 2;
 }

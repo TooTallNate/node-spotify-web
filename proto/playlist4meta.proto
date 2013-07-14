@@ -31,9 +31,9 @@ message ListAttributes {
   optional string description = 2;
   optional bytes picture = 3;
   optional bool collaborative = 4;
-  optional string pl3_version = 5;
-  optional bool deleted_by_owner = 6;
-  optional bool restricted_collaborative = 7;
+  optional string pl3Version = 5;
+  optional bool deletedByOwner = 6;
+  optional bool restrictedCollaborative = 7;
 }
 enum ItemAttributeKind {
   ITEM_UNKNOWN = 0;
@@ -48,11 +48,11 @@ enum ItemAttributeKind {
   ITEM_SEEN_AT = 9;
 }
 message ItemAttributes {
-  optional string added_by = 1;
+  optional string addedBy = 1;
   optional string message = 3;
   optional bool seen = 4;
-  optional DownloadFormat download_format = 6;
-  optional string sevendigital_id = 7;
+  optional DownloadFormat downloadFormat = 6;
+  optional string sevendigitalId = 7;
 }
 message StringAttribute {
   required string key = 1;
