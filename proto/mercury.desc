@@ -1,15 +1,17 @@
 
-›
+Í
 mercury.protospotify.mercury.proto"P
 MercuryMultiGetRequest6
 request (2%.spotify.mercury.proto.MercuryRequest"J
 MercuryMultiGetReply2
-reply (2#.spotify.mercury.proto.MercuryReply"O
+reply (2#.spotify.mercury.proto.MercuryReply"Ÿ
 MercuryRequest
 uri (	
-content_type (	
-body (
-etag ("ƒ
+content_type (	
+method (	
+status_code (
+source (	5
+user_fields (2 .spotify.mercury.proto.UserField"º
 MercuryReply
 status_code (
 status_message (	E
@@ -17,8 +19,12 @@
 ttl (
 etag (
 content_type (
-body ("@
+body (5
+user_fields (2 .spotify.mercury.proto.UserField"@
 CachePolicy
 CACHE_NO
 CACHE_PRIVATE
-CACHE_PUBLIC
+CACHE_PUBLIC"(
+	UserField
+name (	
+value (
