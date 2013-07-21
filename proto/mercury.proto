@@ -8,11 +8,11 @@ message MercuryMultiGetReply {
 }
 message MercuryRequest {
   optional string uri = 1;
-  optional string content_type = 2;
+  optional string contentType = 2;
   optional string method = 3;
-  optional sint32 status_code = 4;
+  optional sint32 statusCode = 4;
   optional string source = 5;
-  repeated UserField user_fields = 6;
+  repeated UserField userFields = 6;
 }
 message MercuryReply {
   enum CachePolicy {
