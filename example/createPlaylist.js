@@ -26,7 +26,7 @@ Spotify.login(login.username, login.password, function (err, spotify) {
     console.log('created playlist, ' + playlist.uri);
 
     // add tracks to the newly created playlist
-    playlist.addItems(tracks, function(err, result) {
+    playlist.add(tracks, function(err, result) {
       if (err) throw err;
       console.log('all tracks added successfully');
       spotify.disconnect();
