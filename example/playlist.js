@@ -17,11 +17,12 @@ if ('playlist' != type) {
 Spotify.login(login.username, login.password, function (err, spotify) {
   if (err) throw err;
 
-  spotify.playlist(uri, function (err, playlist) {
+  new spotify.Playlist(uri, function (err, playlist) {
     if (err) throw err;
 
     console.log(playlist.contents);
 
     spotify.disconnect();
   });
+
 });

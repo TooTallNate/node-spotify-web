@@ -21,8 +21,7 @@ tracks.forEach(function(uri) {
 Spotify.login(login.username, login.password, function (err, spotify) {
   if (err) throw err;
 
-  // create a new playlist to add tracks to
-  spotify.createPlaylist({ name: 'Example Playlist' }, function(err, playlist) {
+  spotify.Playlist.create({ name: 'Example Playlist' }, function(err, playlist) {
     if (err) throw err;
     console.log('created playlist, ' + playlist.uri);
 
@@ -31,6 +30,6 @@ Spotify.login(login.username, login.password, function (err, spotify) {
       if (err) throw err;
       console.log('all tracks added successfully');
       spotify.disconnect();
-    })
+    });
   });
 });
