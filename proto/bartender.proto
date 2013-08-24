@@ -1,0 +1,177 @@
+package spotify.bartender.proto;
+
+message StoryRequest {
+  optional string country = 1; // Two-letter ISO 3166-1 country code.
+  optional string language = 2; // Two-letter ISO 639-1 language code.
+  optional string device = 3; // "unknown", "mobile", "tablet" or "desktop".
+  // More device types could be added in the future.
+}
+
+message StoryList {
+  repeated Story stories = 1;
+
+  // Whether this is a page of generic fallback stories (as opposed to a personalized ones).
+  optional bool has_fallback = 12;
+}
+
+enum StoryType {
+  TYPE_UNKNOWN_STORY = 0;
+  TYPE_RECOMMENDATION = 1;
+  TYPE_NEW_RELEASE = 2;
+  TYPE_SHARED_ITEM = 3;
+  TYPE_CREATED_ITEM = 4;
+  TYPE_SUBSCRIBED_TO_ITEM = 5;
+  TYPE_FOLLOWED_PROFILE = 6;
+  TYPE_SOCIAL_LISTEN = 7;
+  TYPE_RECENT_STREAM = 8;
+}
+
+message Story {
+
+  optional int32 version = 1;
+
+  optional string story_id = 2;
+
+  optional StoryType type = 3;
+
+  // The actual music item that is being recommended (track, album, artist, etc.).
+  optional SpotifyLink recommended_item = 5;
+
+  // The "parent" of the media item, if applicable. For a track, this is the album. For an album,
+  // this should be the artist.
+  optional SpotifyLink recommended_item_parent = 6; // DEPRECATED
+
+  // An additional image that may come from 3rd-party metadata, like a concert or news photo.
+  repeated SpotifyImage hero_image = 8;
+
+  optional Metadata metadata = 9;
+
+  optional RichText reason_text = 10;
+
+  repeated SpotifyImage reason_image = 11;
+}
+
+message RichText {
+  optional string text = 1;
+  repeated RichTextField fields = 2;
+}
+
+message RichTextField {
+  optional string text = 1;
+  optional string uri = 2;
+  optional string url = 3;
+  optional bool bold = 4;
+  optional bool italic = 5;
+  optional bool underline = 6;
+}
+
+enum ReasonType {
+  TYPE_UNKNOWN_REASON = 0;
+  TYPE_LISTENED_TO = 1;
+  TYPE_LISTENED_TO2 = 2; // DEPRECATED
+  TYPE_FOLLOW_USER = 3;
+  TYPE_FOLLOW_ARTIST = 4;
+  TYPE_POPULAR = 5;
+}
+
+message Reason { // DEPRECATED
+
+  optional ReasonType type = 1; // DEPRECATED
+
+  repeated SpotifyLink sample_criteria = 2;
+
+  optional int32 criteria_count = 3;
+
+  repeated ReasonType reason_type = 4;
+}
+
+message SpotifyLink { // Can be any spotify object: track, album, artist, playlist or even user.
+  optional string uri = 1;
+  optional string display_name = 2;
+  optional SpotifyLink parent = 3;
+  repeated SpotifyAudioPreview preview = 6;
+}
+
+message SpotifyAudioPreview {
+  optional string uri = 1;
+  optional string file_id = 2;
+}
+
+message SpotifyImage {
+  optional string uri = 1;
+  optional string file_id = 2;
+  optional int32 width = 3;
+  optional int32 height = 4;
+}
+
+enum MetadataType {
+  TYPE_UNKNOWN_METADATA = 0;
+  TYPE_SPOTIFY_DATA = 1;
+  TYPE_REVIEW = 2;
+  TYPE_NEWS = 3;
+  TYPE_CONCERT = 4;
+  TYPE_PLAYLIST = 5;
+}
+
+enum ScoreType {
+  TYPE_UNKNOWN_SCORE = 0;
+  TYPE_FOLLOWER_COUNT = 1;
+  TYPE_STAR_RATING = 2;
+}
+
+message Metadata {
+
+  // Common data
+  optional string id = 1;
+
+  optional string app = 2; // May be spotify
+
+  optional MetadataType type = 3;
+
+  optional string title = 4;
+
+  optional string summary = 5;
+
+  optional string favicon_url = 6;
+
+  optional string external_url = 7;
+
+  optional string internal_uri = 8;
+
+  optional int32 dtpublished = 9;
+
+  optional int32 dtexpiry = 10;
+
+  optional SpotifyLink author = 11;
+
+  repeated int32 score = 12;
+
+  repeated ScoreType score_type = 13;
+
+  optional ConcertData concert_data = 14;
+
+  repeated string item_uri = 15;
+
+  repeated SpotifyImage image = 16; // never returned, only used internally
+}
+
+message ConcertData {
+  optional int32 dtstart = 1;
+  optional int32 dtend = 2;
+  optional Location location = 3;
+}
+
+message Location {
+  optional string name = 1;
+  optional string city = 2;
+  optional double lat = 3;
+  optional double lng = 4;
+}
+
+message DiscoveredPlaylist {
+    optional string uri = 1;
+}
+
+message DiscoverNux {
+  optional int32 seen = 1;
+}
