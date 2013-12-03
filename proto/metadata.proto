@@ -119,6 +119,7 @@ message Restriction {
   enum Catalogue {
     AD = 0;
     SUBSCRIPTION = 1;
+    SHUFFLE = 3;
   }
   enum Type {
     STREAMING = 0;
