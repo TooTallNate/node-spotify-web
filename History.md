@@ -1,3 +1,32 @@
+
+1.0.0 / 2014-01-08
+==================
+
+  * spotify: update user agent and send window size log event on connection (#60)
+  * spotify: tag function bugfix
+  * proto: update schemas module api, add protobufjs support
+  * proto: add pubsub and playlist4service
+  * proto: Update metadata protobuf with added Catalogue SHUFFLE enum
+  * bugfix for multiGet
+  * spotify: use http status message in error when none is defined
+  * spotify: add similar(uri, fn) method
+  * proto: add bartender schemas
+  * track: cache previewUrl from getter in playPreview method and emit error on stream in nextTick
+  * track: emit error if preview stream does not respond with 200 status code
+  * spotify: fix bug which prevented facebook and anonymous login from working
+  * spotify: add facebook and anonymous login
+  * spotify: improve authentication and include trackingId
+  * spotify: add XXX comment...
+  * spotify: more robust `has()` function
+  * track: emit error if stream does not respond with 200 status code
+  * spotify: use correct number argument for sending SUB/UNSUB MercuryRequests
+  * spotify: make callback of sendProtobufRequest optional
+  * track: add previewUrl getter and playPreview method
+  * example: add preview playing example
+  * proto: update metadata fields
+  * spotify: use SelectedListContent instead of ListDump for playlist and rootlist responseSchemas
+  * spotify: refactor MercuryRequest code into sendProtobufRequest function
+
 0.1.3 / 2013-06-16
 ==================
 
