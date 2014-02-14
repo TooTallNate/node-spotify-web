@@ -1,4 +1,5 @@
-
+/// REMEMBER TO JSLINT / JSHINT it before commiting!
+/// TODO(adammw): reorganise into folders
 /**
  * Module dependencies.
  */
@@ -11,6 +12,14 @@ var cheerio = require('cheerio');
 var schemas = require('./schemas');
 var superagent = require('superagent');
 var inherits = require('util').inherits;
+var SpotifyError = require('./error');
+var SpotifyUri = require('./uri');
+var Request = require('./request');
+var HermesRequest = require('./hermes_request');
+var Playlist = require('./playlist');
+var Metadata = require('./metadata');
+var Image = require('./image');
+var User = require('./user');
 var EventEmitter = require('events').EventEmitter;
 var debug = require('debug')('spotify-web');
 var package = require('../package.json');
@@ -29,22 +38,36 @@ var MercuryMultiGetRequest = schemas.build('mercury','MercuryMultiGetRequest');
 var MercuryMultiGetReply = schemas.build('mercury','MercuryMultiGetReply');
 var MercuryRequest = schemas.build('mercury','MercuryRequest');
 
-var Artist = require('./artist');
-var Album = require('./album');
-var Track = require('./track');
-var Image = require('./image');
 require('./restriction');
 
 var SelectedListContent = schemas.build('playlist4','SelectedListContent');
 
-var StoryRequest = schemas.build('bartender','StoryRequest');
-var StoryList = schemas.build('bartender','StoryList');
-
-/**
- * Re-export all the `util` functions.
+/** 
+ * Re-export namespaces
  */
 
-Object.keys(util).forEach(function (key) {
+var exportNamespaces = [Request, HermesRequest, Playlist, Metadata, Metadata.Track, Metadata.Artist, Metadata.Album, User];
+
+exportNamespaces.forEach(function (namespace) {
+  Spotify[namespace.name] = namespace;
+});
+
+/**
+ * Declare which classes can handle which uri types
+ */
+var uriHandlers = {
+  'track': Metadata.Track,
+  'artist': Metadata.Artist,
+  'album': Metadata.Album,
+  'playlist': Playlist,
+  'user': User
+};
+
+/**
+ * Re-export all the `SpotifyUri` functions for backwards compatiblity.
+ */
+
+Object.keys(SpotifyUri).forEach(function (key) {
   Spotify[key] = util[key];
 });
 
@@ -83,6 +106,16 @@ function Spotify () {
   this.connected = false; // true after the WebSocket "connect" message is sent
   this._callbacks = Object.create(null);
 
+  this.ws = null;
+  this.requestQueue = [];
+  this.requestQueueFlushImmediate = null;
+  this.currentPlaySession = null;
+  this.user = null;
+  this.username = null;
+  this.country = null;
+  this.accountType = null;
+  this.restrictToAvailable = true;
+
   this.authServer = 'play.spotify.com';
   this.authUrl = '/xhr/json/auth.php';
   this.landingUrl = '/';
@@ -96,7 +129,8 @@ function Spotify () {
     small:  this.sourceUrl + '/120/',
     normal: this.sourceUrl + '/300/',
     large:  this.sourceUrl + '/640/',
-    avatar: this.sourceUrl + '/artist_image/'
+    avatar: this.sourceUrl + '/artist_image/',
+    original: this.sourceUrl + '/unbranded/'
   };
 
   // mappings for the protobuf `enum Size`
@@ -122,8 +156,93 @@ function Spotify () {
 
   // binded callback for when user doesn't pass a callback function
   this._defaultCallback = this._defaultCallback.bind(this);
+
+  // bind exported namespaces into object
+  exportNamespaces.forEach(util.bindNamespace.bind(null, this));
+
+  // override Metadata.get with Spotify.get
+  this.Metadata.get = this.get;
 }
 inherits(Spotify, EventEmitter);
+
+/**
+ * Convert Schemas to objects
+ *
+ * @param {Object} obj
+ * @param {Object} (Optional) parent
+ * @return {Object}
+ * @api private 
+ */
+Spotify.prototype.objectify = function(obj, parent) {
+  if ('object' != typeof obj) return obj;
+
+  // TODO(adammw): convert bare uris to SpotifyUri types 
+  // (may not be needed if everything has it's own class that does that)
+  
+  var types = [ this.Track, this.Album, this.Artist ];
+  for (var i = 0, l = types.length; i < l; i++) {
+    var type = types[0];
+    
+    // skip if it is already a type
+    if (obj instanceof type) return obj;
+
+    // check if the object is an instance of any of the types accepted schemas
+    for (var j = 0, l = type.acceptedSchemas.length; j < l; j++) {
+      var schema = type.acceptedSchemas[j];
+      if (obj instanceof schema) {
+        debug('objectifying object: %j', obj);
+        return new type(obj, parent);
+      }
+    }
+  }
+
+  // otherwise, recurse the object
+  var self = this;
+  Object.keys(obj).forEach(function(key) {
+    obj[key] = self.objectify(obj[key], parent);
+  });
+  return obj;
+};
+
+
+
+/**
+ * Gets the "metadata" object for one or more URIs.
+ *
+ * @param {Array|String} uris A single URI, or an Array of URIs to get "metadata" for
+ * @param {Function} (Optional) fn callback function
+ * @retruns {Array|Object|Null}
+ * @api public
+ */
+
+Spotify.prototype.get =
+Spotify.prototype.metadata = function(uris, fn) {
+  debug('get(%j)', uris);
+
+  var spotify = this;
+
+  // convert input uris to array but save if we should return an array or a bare object
+  var returnArray = Array.isArray(uris);
+  if (!returnArray) uris = [uris];
+
+  var metadataObjs;
+  try {
+    metadataObjs = uris.map(function(uri) {
+      var type = util.uriType(uri);
+      if (!uriHandlers[type]) throw new Error('Unhandled URI type: ' + type);
+      return new uriHandlers[type](spotify, uri);
+    });
+  } catch (e) {
+    debug('metadata error - %s', e);
+    if ('function' == typeof fn) return process.nextTick(fn.bind(null, e));
+    return null;
+  }
+
+  // return the array of metadataObjs or a single metadataObj and call callbacks if applicable
+  var ret = (returnArray) ? metadataObjs : metadataObjs[0];
+  if ('function' == typeof fn) return process.nextTick(fn.bind(null, null, ret));
+  return ret;
+};
 
 /**
  * Creates the connection to the Spotify Web websocket server and logs in using
@@ -431,6 +550,8 @@ Spotify.prototype._onmessagecommand = function (command, args) {
     } catch (e) {
       this.emit('error', e);
     }
+  } else if ('ping_flash2' == command) {
+    this.sendPong(args[0]);
   } else if ('login_complete' == command) {
     // ignore...
   } else {
@@ -452,6 +573,35 @@ Spotify.prototype._onworkdone = function (err, res) {
 };
 
 /**
+ * Responds to a sp/ping_flash2 request
+ *
+ * This request is usually handled by Flash, and in a perfect world we would
+ * execute the "original" Flash code directly with Shumway.
+ *
+ * Instead, this implementes a reverse-engineered algorithm that is estimated
+ * to produce the same output for 20-byte inputs, tested with
+ * Client version: 0.6.23.160, Hash: 3f1a035, Deployed at: 2014-02-13 15:06 UTC.
+ *
+ * @param {String} ping the argument sent from the request
+ */
+Spotify.prototype.sendPong = function(ping) {
+  var pong = "undefined 0";
+  var input = ping.split(' ');
+  if (input.length >= 20) {
+    var key = [[19,104],[16,19],[0,41],[3,133],[10,175],[1,240],[5,150],[17,116],[7,240],[13,0]];
+    var output = new Array(key.length);
+    for (var i = 0; i < key.length; i++) {
+      var idx = key[i][0];
+      var xor = key[i][1];
+      output[i] = input[idx] ^ xor;
+    }
+    pong = output.join(' ');
+  }
+  debug('received flash ping %j, sending pong: %j', ping, pong);
+  this.sendCommand('sp/pong_flash2', [pong]);
+};
+
+/**
  * Sends a "message" across the WebSocket connection with the given "name" and
  * optional Array of arguments.
  *
@@ -467,23 +617,9 @@ Spotify.prototype.sendCommand = function (name, args, fn) {
     args = [];
   }
   debug('sendCommand(%j, %j)', name, args);
-  var msg = {
-    name: name,
-    id: String(this.seq++),
-    args: args || []
-  };
-  if ('function' == typeof fn) {
-    // store callback function for later
-    debug('storing callback function for message id %s', msg.id);
-    this._callbacks[msg.id] = fn;
-  }
-  var data = JSON.stringify(msg);
-  debug('sending command: %s', data);
-  try {
-    this.ws.send(data);
-  } catch (e) {
-    this.emit('error', e);
-  }
+
+  var request = new this.Request(name, args);
+  request.send(fn);
 };
 
 /**
@@ -650,65 +786,6 @@ Spotify.prototype.disconnect = function () {
 };
 
 /**
- * Gets the "metadata" object for one or more URIs.
- *
- * @param {Array|String} uris A single URI, or an Array of URIs to get "metadata" for
- * @param {Function} fn callback function
- * @api public
- */
-
-Spotify.prototype.get =
-Spotify.prototype.metadata = function (uris, fn) {
-  debug('metadata(%j)', uris);
-  if (!Array.isArray(uris)) {
-    uris = [ uris ];
-  }
-  // array of "request" Objects that will be protobuf'd
-  var requests = [];
-  var mtype = '';
-  uris.forEach(function (uri) {
-    var type = util.uriType(uri);
-    if ('local' == type) {
-      debug('ignoring "local" track URI: %j', uri);
-      return;
-    }
-    var id = util.uri2id(uri);
-    mtype = type;
-    requests.push({
-      method: 'GET',
-      uri: 'hm://metadata/' + type + '/' + id
-    });
-  });
-
-
-  var header = {
-    method: 'GET',
-    uri: 'hm://metadata/' + mtype + 's'
-  };
-  var multiGet = true;
-  if (requests.length == 1) {
-    header = requests[0];
-    requests = null;
-    multiGet = false;
-  } 
-
-  this.sendProtobufRequest({
-    header: header,
-    payload: requests,
-    isMultiGet: multiGet,
-    responseSchema: {
-      'vnd.spotify/metadata-artist': Artist,
-      'vnd.spotify/metadata-album': Album,
-      'vnd.spotify/metadata-track': Track
-    }
-  }, function(err, item) {
-    if (err) return fn(err);
-    item._loaded = true;
-    fn(null, item);
-  })
-};
-
-/**
  * Gets the metadata from a Spotify "playlist" URI.
  *
  * @param {String} uri playlist uri
@@ -797,146 +874,11 @@ Spotify.prototype.rootlist = function (user, from, length, fn) {
 Spotify.prototype.similar = function(uri, fn) {
   debug('similar(%j)', uri);  
 
-  var parts = uri.split(':');
-  var type = parts[1];
-  var id = parts[2];
-
-  if (!type || !id || 'track' != type)
-    throw new Error('uri must be a track uri');
-
-  this.sendProtobufRequest({
-    header: {
-      method: 'GET',
-      uri: 'hm://similarity/suggest/' + id
-    },
-    payload: {
-      country: this.country || 'US',
-      language: this.settings.locale.current || 'en',
-      device: 'web'
-    },
-    payloadSchema: StoryRequest,
-    responseSchema: StoryList
-  }, fn);
-};
-
-/**
- * Gets the MP3 160k audio URL for the given "track" metadata object.
- *
- * @param {Object} track Track "metadata" instance
- * @param {Function} fn callback function
- * @api public
- */
-
-Spotify.prototype.trackUri = function (track, fn) {
-  debug('trackUri()');
-  // TODO: make "format" configurable here
-  this.recurseAlternatives(track, this.country, function (err, track) {
-    if (err) return fn(err);
-    var args = [ 'mp3160', util.gid2id(track.gid) ];
-    debug('sp/track_uri args: %j', args);
-    this.sendCommand('sp/track_uri', args, function (err, res) {
-      if (err) return fn(err);
-      fn(null, res.result);
-    });
-  }.bind(this));
-};
-
-/**
- * Checks if the given track "metadata" object is "available" for playback, taking
- * account for the allowed/forbidden countries, the user's current country, the
- * user's account type (free/paid), etc.
- *
- * @param {Object} track Track "metadata" instance
- * @param {String} country 2 letter country code to check if the track is playable for
- * @return {Boolean} true if track is playable, false otherwise
- * @api public
- */
-
-Spotify.prototype.isTrackAvailable = function (track, country) {
-  if (!country) country = this.country;
-  debug('isTrackAvailable()');
-
-  var allowed = [];
-  var forbidden = [];
-  var available = false;
-  var restriction;
-
-  if (Array.isArray(track.restriction)) {
-    for (var i = 0; i < track.restriction.length; i++) {
-      restriction = track.restriction[i];
-      allowed.push.apply(allowed, restriction.allowed);
-      forbidden.push.apply(forbidden, restriction.forbidden);
-
-      var isAllowed = !restriction.hasOwnProperty('countriesAllowed') || has(allowed, country);
-      var isForbidden = has(forbidden, country) && forbidden.length > 0;
-
-      // guessing at names here, corrections welcome...
-      var accountTypeMap = {
-        premium: 'SUBSCRIPTION',
-        unlimited: 'SUBSCRIPTION',
-        free: 'AD'
-      };
-
-      if (has(allowed, country) && has(forbidden, country)) {
-        isAllowed = true;
-        isForbidden = false;
-      }
-
-      var type = accountTypeMap[this.accountType] || 'AD';
-      var applicable = has(restriction.catalogue, type);
-
-      available = isAllowed && !isForbidden && applicable;
-
-      //debug('restriction: %j', restriction);
-      debug('type: %j', type);
-      debug('allowed: %j', allowed);
-      debug('forbidden: %j', forbidden);
-      debug('isAllowed: %j', isAllowed);
-      debug('isForbidden: %j', isForbidden);
-      debug('applicable: %j', applicable);
-      debug('available: %j', available);
-
-      if (available) break;
-    }
-  }
-  return available;
-};
-
-/**
- * Checks if the given "track" is "available". If yes, returns the "track"
- * untouched. If no, then the "alternative" tracks array on the "track" instance
- * is searched until one of them is "available", and then returns that "track".
- * If none of the alternative tracks are "available", returns `null`.
- *
- * @param {Object} track Track "metadata" instance
- * @param {String} country 2 letter country code to attempt to find a playable "track" for
- * @param {Function} fn callback function
- * @api public
- */
-
-Spotify.prototype.recurseAlternatives = function (track, country, fn) {
-  debug('recurseAlternatives()');
-  function done () {
-    process.nextTick(function () {
-      fn(null, track);
-    });
-  }
-  if (this.isTrackAvailable(track, country)) {
-    return done();
-  } else if (Array.isArray(track.alternative)) {
-    var tracks = track.alternative;
-    for (var i = 0; i < tracks.length; i++) {
-      debug('checking alternative track %j', track.uri);
-      track = tracks[i];
-      if (this.isTrackAvailable(track, country)) {
-        return done();
-      }
-    }
-  }
-  // not playable
-  process.nextTick(function () {
-    fn(new Error('Track is not playable in country "' + country + '"'));
-  });
+  if ('track' != util.uriType(uri))
+    fn(new Error('uri must be a track uri'));
+ 
+  var track = this.Track.get(uri);
+  track.similar(fn);
 };
 
 /**
@@ -998,129 +940,6 @@ Spotify.prototype.search = function (opts, fn) {
 };
 
 /**
- * Sends the "sp/track_end" event. This is required after each track is played,
- * otherwise Spotify limits you to 3 track URL fetches per session.
- *
- * @param {String} lid the track "lid"
- * @param {String} uri track spotify uri (not playback uri)
- * @param {Number} ms number of milliseconds played
- * @param {Function} fn callback function
- * @api public
- */
-
-Spotify.prototype.sendTrackEnd = function (lid, uri, ms, fn) {
-  debug('sendTrackEnd(%j, %j, %j)', lid, uri, ms);
-  if (!fn) fn = this._defaultCallback;
-
-  var ms_played = Number(ms);
-  var ms_played_union = ms_played;
-  var n_seeks_forward = 0;
-  var n_seeks_backward = 0;
-  var ms_seeks_forward = 0;
-  var ms_seeks_backward = 0;
-  var ms_latency = 100;
-  var display_track = null;
-  var play_context = 'unknown';
-  var source_start = 'unknown';
-  var source_end = 'unknown';
-  var reason_start = 'unknown';
-  var reason_end = 'unknown';
-  var referrer = 'unknown';
-  var referrer_version = '0.1.0';
-  var referrer_vendor = 'com.spotify';
-  var max_continuous = ms_played;
-  var args = [
-    lid,
-    ms_played,
-    ms_played_union,
-    n_seeks_forward,
-    n_seeks_backward,
-    ms_seeks_forward,
-    ms_seeks_backward,
-    ms_latency,
-    display_track,
-    play_context,
-    source_start,
-    source_end,
-    reason_start,
-    reason_end,
-    referrer,
-    referrer_version,
-    referrer_vendor,
-    max_continuous
-  ];
-  this.sendCommand('sp/track_end', args, function (err, res) {
-    if (err) return fn(err);
-    if (null == res.result) {
-      // apparently no result means "ok"
-      fn();
-    } else {
-      // TODO: handle error case
-    }
-  });
-};
-
-/**
- * Sends the "sp/track_event" event. These are pause and play events (possibly
- * others).
- *
- * @param {String} lid the track "lid"
- * @param {String} event
- * @param {Number} ms number of milliseconds played so far
- * @param {Function} fn callback function
- * @api public
- */
-
-Spotify.prototype.sendTrackEvent = function (lid, event, ms, fn) {
-  debug('sendTrackEvent(%j, %j, %j)', lid, event, ms);
-  var num = event;
-  var args = [ lid, num, ms ];
-  this.sendCommand('sp/track_event', args, function (err, res) {
-    if (err) return fn(err);
-    console.log(res);
-  });
-};
-
-/**
- * Sends the "sp/track_progress" event. Should be called periodically while
- * playing a Track.
- *
- * @param {String} lid the track "lid"
- * @param {Number} ms number of milliseconds played so far
- * @param {Function} fn callback function
- * @api public
- */
-
-Spotify.prototype.sendTrackProgress = function (lid, ms, fn) {
-  debug('sendTrackProgress(%j, %j)', lid, ms);
-  var ms_played = Number(ms);
-  var source_start = 'unknown';
-  var reason_start = 'unknown';
-  var ms_latency = 100;
-  var play_context = 'unknown';
-  var display_track = '';
-  var referrer = 'unknown';
-  var referrer_version = '0.1.0';
-  var referrer_vendor = 'com.spotify';
-  var args = [
-    lid,
-    source_start,
-    reason_start,
-    ms_played,
-    ms_latency,
-    play_context,
-    display_track,
-    referrer,
-    referrer_version,
-    referrer_vendor
-  ];
-  this.sendCommand('sp/track_progress', args, function (err, res) {
-    if (err) return fn(err);
-    console.log(res);
-  });
-};
-
-/**
  * "connect" command callback function. If the result was "ok", then get the
  * logged in user's info.
  *
@@ -1150,9 +969,11 @@ Spotify.prototype._onconnect = function (err, res) {
 
 Spotify.prototype._onuserinfo = function (err, res) {
   if (err) return this.emit('error', err);
+
+  this.user_info = res.result;
   this.username = res.result.user;
-  this.country = res.result.country;
-  this.accountType = res.result.catalogue;
+  if (this.username) this.user = new this.User(this.username);
+
   this.emit('login');
 };
 
@@ -1246,19 +1067,4 @@ function tag(spotify, obj){
     writable: true,
     configurable: true
   });
-}
-
-/**
- * XXX: move to `util`?
- * Returns `true` if `val` is present in the `array`. Returns `false` otherwise.
- *
- * @api private
- */
-
-function has (array, val) {
-  var rtn = false;
-  if (Array.isArray(array)) {
-    rtn = !!~array.indexOf(val);
-  }
-  return rtn;
 }
