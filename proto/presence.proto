@@ -1,0 +1,96 @@
+package spotify.presence.proto;
+
+message PlaylistPublishedState {
+  optional string uri = 1;
+  optional int64 timestamp = 2;
+}
+
+message PlaylistTrackAddedState {
+  optional string playlist_uri = 1;
+  optional string track_uri = 2;
+  optional int64 timestamp = 3;
+}
+
+message TrackFinishedPlayingState {
+  optional string uri = 1;
+  optional string context_uri = 2;
+  optional int64 timestamp = 3;
+  optional string referrer_uri = 4;
+
+}
+
+message FavoriteAppAddedState {
+  optional string app_uri = 1;
+  optional int64 timestamp = 2;
+}
+
+message TrackStartedPlayingState {
+  optional string uri = 1;
+  optional string context_uri = 2;
+  optional int64 timestamp = 3;
+  optional string referrer_uri = 4;
+}
+
+message UriSharedState {
+  optional string uri = 1;
+  optional string message = 2 [default=""];
+  optional int64 timestamp = 3;
+}
+
+message ArtistFollowedState {
+  optional string uri = 1;
+  optional string artist_name = 2 [default=""];
+  optional string artist_cover_uri = 3 [default=""];
+  optional int64 timestamp = 4;
+}
+
+message DeviceInformation {
+  optional string os = 1;
+  optional string type = 2;
+}
+
+message GenericPresenceState {
+  optional int32 type = 1;
+  optional int64 timestamp = 2;
+  optional string item_uri = 3;
+  optional string item_name = 4;
+  optional string item_image = 5;
+  optional string context_uri = 6;
+  optional string context_name = 7;
+  optional string context_image = 8;
+  optional string referrer_uri = 9;
+  optional string referrer_name = 10;
+  optional string referrer_image = 11;
+  optional string message = 12;
+  optional DeviceInformation device_information = 13;
+}
+
+message State {
+  optional int64 timestamp = 1;
+
+  enum Type {
+    PLAYLIST_PUBLISHED = 1;
+    PLAYLIST_TRACK_ADDED = 2;
+    TRACK_FINISHED_PLAYING = 3;
+    FAVORITE_APP_ADDED = 4;
+    TRACK_STARTED_PLAYING = 5;
+    URI_SHARED = 6;
+    ARTIST_FOLLOWED = 7;
+    GENERIC = 11;
+  }
+
+  optional Type type = 2;
+  optional string uri = 3;
+  optional PlaylistPublishedState playlist_published = 4;
+  optional PlaylistTrackAddedState playlist_track_added = 5;
+  optional TrackFinishedPlayingState track_finished_playing = 6;
+  optional FavoriteAppAddedState favorite_app_added = 7;
+  optional TrackStartedPlayingState track_started_playing = 8;
+  optional UriSharedState uri_shared = 9;
+  optional ArtistFollowedState artist_followed = 10;
+  optional GenericPresenceState generic = 11;
+}
+
+message StateList {
+  repeated State states = 1;
+}
