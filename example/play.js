@@ -11,7 +11,7 @@ var lame = require('lame');
 var Speaker = require('speaker');
 
 // determine the URI to play, ensure it's a "track" URI
-var uri = process.argv[2] || 'spotify:track:6tdp8sdXrXlPV6AZZN2PE8';
+var uri = process.argv[2] || 'spotify:track:1ZBAee0xUblF4zhfefY0W1';
 var type = Spotify.uriType(uri);
 if ('track' != type) {
   throw new Error('Must pass a "track" URI, got ' + JSON.stringify(type));
