@@ -1,4 +1,10 @@
 
+1.1.1 / 2014-04-02
+==================
+
+  * example: switch
+  * Added Spotify.Web.App.initialize() noop Function (#76)
+
 1.1.0 / 2014-02-24
 ==================
 
