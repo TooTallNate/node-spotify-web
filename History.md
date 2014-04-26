@@ -1,4 +1,10 @@
 
+1.2.0 / 2014-04-26
+==================
+
+  * spotify: new flash key (#81, @brandtabbott)
+  * spotidy: added functionality to get a users starred playlist with example
+
 1.1.1 / 2014-04-02
 ==================
 
