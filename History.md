@@ -3,13 +3,13 @@
 ==================
 
   * spotify: new flash key (#81, @brandtabbott)
-  * spotidy: added functionality to get a users starred playlist with example
+  * spotify: added functionality to get a users starred playlist with example
 
 1.1.1 / 2014-04-02
 ==================
 
   * example: switch
-  * Added Spotify.Web.App.initialize() noop Function (#76)
+  * spotify: added `Spotify.Web.App.initialize()` noop Function (#76)
 
 1.1.0 / 2014-02-24
 ==================
