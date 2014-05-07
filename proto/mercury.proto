@@ -9,6 +9,9 @@ message MercuryMultiGetReply {
 message MercuryRequest {
   optional string uri = 1;
   optional string content_type = 2;
+  // per latest .xml?
+  //optional bytes body = 3;
+  //optional bytes etag = 4;
   optional string method = 3;
   optional sint32 status_code = 4;
   optional string source = 5;
