@@ -59,4 +59,4 @@ See the `example` directory for some more example code.
 API
 ---
 
-TODO: document!
+> Work in progress, see `./lib/spotify.js` for full API reference
