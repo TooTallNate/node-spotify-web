@@ -1,6 +1,6 @@
 node-spotify-web
 ================
-### NodeJS implementation of the Spotify Web protocol
+### Node.js implementation of the Spotify Web protocol
 
 This module implements the "Spotify Web" WebSocket protocol that is used on
 Spotify's [Web UI](http://play.spotify.com).

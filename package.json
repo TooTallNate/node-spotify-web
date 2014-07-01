@@ -1,7 +1,7 @@
 {
   "name": "spotify-web",
   "version": "1.2.0",
-  "description": "NodeJS implementation of the Spotify Web protocol",
+  "description": "Node.js implementation of the Spotify Web protocol",
   "main": "index.js",
   "dependencies": {
     "cheerio": "~0.10.5",
