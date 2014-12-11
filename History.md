@@ -1,4 +1,15 @@
 
+1.3.0 / 2014-12-11
+==================
+
+  * spotify: update comment to explain the web service
+  * spotify: use `ping-pong.spotify.nodestuff.net` web service for sendPong (#98, @denysvitali)
+  * spotify: set "User-Agent" and "Origin" on WebSocket connection (#96, @denysvitali)
+  * add LICENSE file
+  * README: add License section
+  * s/NodeJS/Node.js/
+  * example: add an example of getting Artist "genre"
+
 1.2.0 / 2014-04-26
 ==================
 
