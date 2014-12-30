@@ -1,0 +1,7 @@
+package spotify.hermes.pubsub.proto;
+ 
+message Subscription {
+  optional string uri = 1;
+  optional int32 expiry = 2;
+  optional int32 status_code = 3;
+}

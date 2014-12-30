@@ -1,0 +1,34 @@
+package spotify.mercury.proto;
+
+message MercuryMultiGetRequest {
+  repeated MercuryRequest request = 1;
+}
+message MercuryMultiGetReply {
+  repeated MercuryReply reply = 1;
+}
+message MercuryRequest {
+  optional string uri = 1;
+  optional string content_type = 2;
+  optional string method = 3;
+  optional sint32 status_code = 4;
+  optional string source = 5;
+  repeated UserField user_fields = 6;
+}
+message MercuryReply {
+  enum CachePolicy {
+    CACHE_NO = 1;
+    CACHE_PRIVATE = 2;
+    CACHE_PUBLIC = 3;
+  }
+  optional sint32 status_code = 1;
+  optional string status_message = 2;
+  optional CachePolicy cache_policy = 3;
+  optional sint32 ttl = 4;
+  optional bytes etag = 5;
+  optional bytes content_type = 6;
+  optional bytes body = 7;
+}
+message UserField {
+  optional string name = 1;
+  optional bytes value = 2;
+}
