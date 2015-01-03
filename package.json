@@ -4,20 +4,20 @@
   "description": "Node.js implementation of the Spotify Web protocol",
   "main": "index.js",
   "dependencies": {
-    "cheerio": "~0.10.5",
-    "debug": "~0.7.0",
-    "protobufjs": "~2.0.0-rc2",
-    "superagent": "~0.12.0",
-    "ws": "~0.4.25",
-    "readable-stream": "~0.2.0"
+    "cheerio": "~0.18.0",
+    "debug": "~2.1.1",
+    "protobufjs": "~2.2.1",
+    "superagent": "~0.21.0",
+    "ws": "~0.6.4",
+    "readable-stream": "~1.0.33"
   },
   "optionalDependencies": {
-    "protobuf": "~0.8.6"
+    "protobuf": "~0.11.0"
   },
   "devDependencies": {
-    "lame": "~1.0.1",
-    "speaker": "~0.0.6",
-    "xml2js": "~0.2.2"
+    "lame": "~1.1.1",
+    "speaker": "~0.2.1",
+    "xml2js": "~0.4.4"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
