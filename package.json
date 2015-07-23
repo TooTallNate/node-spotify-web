@@ -15,9 +15,9 @@
     "protobuf": "~0.11.0"
   },
   "devDependencies": {
-    "lame": "~1.1.1",
-    "speaker": "~0.2.1",
-    "xml2js": "~0.4.4"
+    "lame": "~1.2.2",
+    "speaker": "~0.2.5",
+    "xml2js": "~0.4.9"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
