@@ -116,18 +116,13 @@ message Copyright {
   optional string text = 2;
 }
 message Restriction {
-  enum Catalogue {
-    AD = 0;
-    SUBSCRIPTION = 1;
-    SHUFFLE = 3;
-  }
   enum Type {
     STREAMING = 0;
   }
-  repeated Catalogue catalogue = 1;
   optional string countries_allowed = 2;
   optional string countries_forbidden = 3;
   optional Type type = 4;
+  repeated string catalogue_str = 5;
 }
 
 message SalePeriod {
