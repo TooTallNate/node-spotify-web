@@ -8,11 +8,11 @@
     "debug": "~2.1.1",
     "protobufjs": "~2.2.1",
     "superagent": "~0.21.0",
-    "ws": "~0.6.4",
+    "ws": "~0.8.1",
     "readable-stream": "~1.0.33"
   },
   "optionalDependencies": {
-    "protobuf": "~0.11.0"
+    "protobuf": "colorcyan/protobuf"
   },
   "devDependencies": {
     "lame": "~1.2.2",
