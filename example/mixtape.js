@@ -66,7 +66,8 @@ function play(uri, onFinishCallback){
 		*/
 		stream
 		.on('region-error', function(err){
-		  console.log(err.message + "\n\nExited.") && process.exit(-1); 
+		  console.log(err.message + "\n\nExited.") 
+		  process.exit(-1); 
 		})
 		.on('network-error', function(err){
 			if(networkErrorCount in networkErrorActions) networkErrorActions[networkErrorCount](); 
