@@ -7,7 +7,7 @@
     "cheerio": "~0.18.0",
     "debug": "~2.1.1",
     "protobufjs": "~2.2.1",
-    "superagent": "~0.21.0",
+    "superagent": "~1.8.3",
     "ws": "~0.6.4",
     "readable-stream": "~1.0.33"
   },
